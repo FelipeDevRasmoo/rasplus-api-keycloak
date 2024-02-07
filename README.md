@@ -1,1 +1,3 @@
-# rasplus-api-keycloak
+# Rasmoo Plus API
+
+Projeto rasmoo plus utilizando keycloak como forma de autenticação

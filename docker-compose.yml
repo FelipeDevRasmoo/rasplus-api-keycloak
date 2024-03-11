@@ -13,11 +13,11 @@ services:
       MYSQL_USER: rasmoo
       MYSQL_PASSWORD: senha123
     volumes:
-    - mysql_data_container:/data/db
-    - ./initdb:/docker-entrypoint-initdb.d #scripts sql docker
+      - mysql_data_container:/data/db
+      - ./initdb:/docker-entrypoint-initdb.d #scripts sql docker
     networks:
-    - keycloak_network
-    
+      - keycloak_network
+
   redis:
     image: redis:4
     container_name: redis-rasplus-1

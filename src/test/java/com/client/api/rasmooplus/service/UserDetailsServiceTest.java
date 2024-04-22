@@ -2,12 +2,10 @@ package com.client.api.rasmooplus.service;
 
 import com.client.api.rasmooplus.exception.BadRequestException;
 import com.client.api.rasmooplus.exception.NotFoudException;
-import com.client.api.rasmooplus.model.jpa.UserCredentials;
 import com.client.api.rasmooplus.model.jpa.UserType;
 import com.client.api.rasmooplus.model.redis.UserRecoveryCode;
 import com.client.api.rasmooplus.service.impl.UserDetailsServiceImpl;
 import com.client.api.rasmooplus.integration.MailIntegration;
-import com.client.api.rasmooplus.repositoy.jpa.UserDetailsRepository;
 import com.client.api.rasmooplus.repositoy.redis.UserRecoveryCodeRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

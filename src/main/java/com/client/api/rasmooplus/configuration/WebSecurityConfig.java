@@ -25,12 +25,12 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorize -> {
-                            authorize.requestMatchers(HttpMethod.GET, AUTH_SWAGGER_LIST);
-                            authorize.requestMatchers(HttpMethod.GET, "/subscription-type");
-                            authorize.requestMatchers(HttpMethod.POST, "/user");
-                            authorize.requestMatchers(HttpMethod.POST, "/payment/process");
-                            authorize.requestMatchers(HttpMethod.POST, "/auth");
-                            authorize.requestMatchers("/auth/recovery-code/*");
+                            authorize.requestMatchers( AUTH_SWAGGER_LIST);
+                            authorize.requestMatchers(HttpMethod.GET, "/subscription-type").permitAll();
+                            authorize.requestMatchers(HttpMethod.POST, "/user").permitAll();
+                            authorize.requestMatchers(HttpMethod.POST, "/payment/process").permitAll();
+                            authorize.requestMatchers(HttpMethod.POST, "/auth").permitAll();
+                            authorize.requestMatchers("/auth/recovery-code/*").permitAll();
                             authorize.anyRequest().authenticated();
                         }
                 )

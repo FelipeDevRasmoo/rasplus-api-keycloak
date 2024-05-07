@@ -35,6 +35,11 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(authenticationService.auth(dto));
     }
 
+    @PostMapping(value = "/refresh-token", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> auth(@RequestParam("token") String refreshToken) {
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationService.refreshToken(refreshToken));
+    }
+
     @PostMapping(value = "/recovery-code/send",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> sendRecoveryCode(@RequestBody @Valid UserRecoveryCode dto) {
         userDetailsService.sendRecoveryCode(dto.getEmail());

@@ -15,6 +15,9 @@ import org.springframework.util.MultiValueMap;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    private static final String REFRESH_TOKEN = "refresh_token";
+    private static final String PASSWORD = "password";
+
     @Value("${keycloak.auth-server-uri}")
     private String keycloakUri;
 
@@ -23,9 +26,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${keycloak.credentials.client-secret}")
     private String clientSecret;
-
-    @Value("${keycloak.credentials.grant-type}")
-    private String grantType;
 
     @Autowired
     private HttpComponent httpComponent;
@@ -38,7 +38,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .clientSecret(clientSecret)
                     .username(dto.getUsername())
                     .password(dto.getPassword())
-                    .grantType(grantType)
+                    .grantType(PASSWORD)
+                    .build();
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(keycloakOAuth, httpComponent.httpHeaders());
+            ResponseEntity<String> response = httpComponent.restTemplate().postForEntity(
+                    keycloakUri + "/protocol/openid-connect/token",
+                    request,
+                    String.class
+            );
+            return response.getBody();
+        } catch (Exception e) {
+            throw new BadRequestException("Erro ao formatar token - "+e.getMessage());
+        }
+    }
+
+    @Override
+    public String refreshToken(String refreshToken) {
+        try {
+            MultiValueMap<String, String> keycloakOAuth = KeycloakOAuthDto.builder()
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .refreshToken(refreshToken)
+                    .grantType(REFRESH_TOKEN)
                     .build();
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(keycloakOAuth, httpComponent.httpHeaders());
             ResponseEntity<String> response = httpComponent.restTemplate().postForEntity(

@@ -30,6 +30,7 @@ public class WebSecurityConfig {
                             authorize.requestMatchers(HttpMethod.POST, "/user").permitAll();
                             authorize.requestMatchers(HttpMethod.POST, "/payment/process").permitAll();
                             authorize.requestMatchers(HttpMethod.POST, "/auth").permitAll();
+                    authorize.requestMatchers(HttpMethod.POST, "/auth/refresh-token").permitAll();
                             authorize.requestMatchers("/auth/recovery-code/*").permitAll();
                             authorize.anyRequest().authenticated();
                         }

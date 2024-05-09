@@ -15,17 +15,9 @@ import org.springframework.util.MultiValueMap;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final String REFRESH_TOKEN = "refresh_token";
-    private static final String PASSWORD = "password";
-
     @Value("${keycloak.auth-server-uri}")
     private String keycloakUri;
 
-    @Value("${keycloak.credentials.client-id}")
-    private String clientId;
-
-    @Value("${keycloak.credentials.client-secret}")
-    private String clientSecret;
 
     @Autowired
     private HttpComponent httpComponent;
@@ -34,11 +26,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public String auth(LoginDto dto) {
         try {
             MultiValueMap<String, String> keycloakOAuth = KeycloakOAuthDto.builder()
-                    .clientId(clientId)
-                    .clientSecret(clientSecret)
+                    .clientId(dto.getClientId())
+                    .clientSecret(dto.getClientSecret())
                     .username(dto.getUsername())
                     .password(dto.getPassword())
-                    .grantType(PASSWORD)
+                    .grantType(dto.getGrantType())
+                    .refreshToken(dto.getRefreshToken())
                     .build();
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(keycloakOAuth, httpComponent.httpHeaders());
             ResponseEntity<String> response = httpComponent.restTemplate().postForEntity(
@@ -52,24 +45,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    @Override
-    public String refreshToken(String refreshToken) {
-        try {
-            MultiValueMap<String, String> keycloakOAuth = KeycloakOAuthDto.builder()
-                    .clientId(clientId)
-                    .clientSecret(clientSecret)
-                    .refreshToken(refreshToken)
-                    .grantType(REFRESH_TOKEN)
-                    .build();
-            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(keycloakOAuth, httpComponent.httpHeaders());
-            ResponseEntity<String> response = httpComponent.restTemplate().postForEntity(
-                    keycloakUri + "/protocol/openid-connect/token",
-                    request,
-                    String.class
-            );
-            return response.getBody();
-        } catch (Exception e) {
-            throw new BadRequestException("Erro ao formatar token - "+e.getMessage());
-        }
-    }
 }

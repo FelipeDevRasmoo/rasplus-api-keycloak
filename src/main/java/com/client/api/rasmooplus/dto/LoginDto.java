@@ -1,7 +1,9 @@
 package com.client.api.rasmooplus.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
@@ -9,10 +11,18 @@ import lombok.*;
 @NoArgsConstructor
 public class LoginDto {
 
-    @NotBlank(message = "atributo obrigatório")
     private String username;
 
-    @NotBlank(message = "atributo obrigatório")
     private String password;
 
+    private String refreshToken;
+
+    @NotBlank
+    private String clientId;
+
+    @NotBlank
+    private String clientSecret;
+
+    @NotBlank
+    private String grantType;
 }

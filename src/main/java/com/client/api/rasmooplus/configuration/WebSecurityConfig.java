@@ -42,8 +42,8 @@ public class WebSecurityConfig {
         return http.authorizeHttpRequests(authorize -> {
                             authorize.requestMatchers(AUTH_SWAGGER_LIST).permitAll();
                             authorize.requestMatchers(HttpMethod.POST, "/auth").permitAll();
-                            authorize.requestMatchers(HttpMethod.POST, "/auth/refresh-token").permitAll();
-                            authorize.requestMatchers(HttpMethod.GET,"/subscription-type").hasAnyAuthority("CLIENT_READ_WRITE", "ADMIN_READ", "ADMIN_WRITE");
+                            authorize.requestMatchers("/auth/*").hasAnyAuthority("CLIENT_READ_WRITE", "ADMIN_READ", "ADMIN_WRITE");
+                            authorize.requestMatchers(HttpMethod.GET, "/subscription-type").hasAnyAuthority("CLIENT_READ_WRITE", "ADMIN_READ", "ADMIN_WRITE");
                             authorize.anyRequest().hasAnyAuthority("ADMIN_READ", "ADMIN_WRITE");
                         }
                 )

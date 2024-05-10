@@ -40,10 +40,11 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorize -> {
-                            authorize.requestMatchers(AUTH_SWAGGER_LIST);
+                            authorize.requestMatchers(AUTH_SWAGGER_LIST).permitAll();
                             authorize.requestMatchers(HttpMethod.POST, "/auth").permitAll();
                             authorize.requestMatchers(HttpMethod.POST, "/auth/refresh-token").permitAll();
-                            authorize.anyRequest().hasAnyAuthority("CLIENT_READ_WRITE");
+                            authorize.requestMatchers(HttpMethod.GET,"/subscription-type").hasAnyAuthority("CLIENT_READ_WRITE", "ADMIN_READ", "ADMIN_WRITE");
+                            authorize.anyRequest().hasAnyAuthority("ADMIN_READ", "ADMIN_WRITE");
                         }
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
@@ -60,7 +61,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        Converter<Jwt, Collection<GrantedAuthority>> jwtCollectionConverter = jwt-> {
+        Converter<Jwt, Collection<GrantedAuthority>> jwtCollectionConverter = jwt -> {
             Map<String, Object> resourcesAccess = jwt.getClaim("realm_access");
             Collection<String> roles = (Collection<String>) resourcesAccess.get("roles");
             return roles.stream()

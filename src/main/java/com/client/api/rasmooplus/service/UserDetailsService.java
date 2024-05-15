@@ -14,4 +14,5 @@ public interface UserDetailsService {
 
     void createAuthUser(UserRepresentationDto userRepresentation);
 
+    void updateAuthUser(UserRepresentationDto userRepresentation, String email);
 }

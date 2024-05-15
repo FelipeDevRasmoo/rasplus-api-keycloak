@@ -11,15 +11,20 @@ import com.client.api.rasmooplus.model.redis.UserRecoveryCode;
 import com.client.api.rasmooplus.repositoy.redis.UserRecoveryCodeRepository;
 import com.client.api.rasmooplus.service.AuthenticationService;
 import com.client.api.rasmooplus.service.UserDetailsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -114,20 +119,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public void createAuthUser(UserRepresentationDto dto) {
-        LoginDto login = new LoginDto();
-        login.setClientId(clientId);
-        login.setClientSecret(clientSecret);
-        login.setGrantType(grantType);
-
+    public void createAuthUser(UserRepresentationDto userRepresentation) {
         try {
-            Map<String, String> clientCredentialsResponse = objectMapper.readValue(authenticationService.auth(login), Map.class);
-            String acessToken = clientCredentialsResponse.get("access_token");
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer "+acessToken);
-            HttpEntity<UserRepresentationDto> request = new HttpEntity<>(dto, headers);
+            String accessToken = getAdminCliAccessToken();
+            HttpHeaders headers = getHttpHeaders(accessToken);
+            HttpEntity<UserRepresentationDto> request = new HttpEntity<>(userRepresentation, headers);
             httpComponent.restTemplate().postForEntity(
                     keycloakUri + "/admin/realms/REALM_RASPLUS_API/users",
                     request,
@@ -137,5 +133,62 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new BadRequestException(e.getMessage());
         }
 
+    }
+
+
+
+    @Override
+    public void updateAuthUser(UserRepresentationDto userRepresentation, String currentEmail) {
+        try {
+            String accessToken = getAdminCliAccessToken();
+            HttpHeaders headers = getHttpHeaders(accessToken);
+            String userId = getUserAuthId(currentEmail, headers);
+            HttpEntity<UserRepresentationDto> request = new HttpEntity<>(userRepresentation, headers);
+            httpComponent.restTemplate().put(
+                    keycloakUri + "/admin/realms/REALM_RASPLUS_API/users/"+userId,
+                    request
+            );
+
+        } catch (Exception e ) {
+            throw new BadRequestException(e.getMessage());
+        }
+        
+    }
+
+    private String getUserAuthId(String currentEmail, HttpHeaders headers) throws JsonProcessingException {
+        HttpEntity<UserRepresentationDto> request = new HttpEntity<>(headers);
+        Map<String, Object> uriVariables = new HashMap<>();
+        uriVariables.put("email", currentEmail);
+        uriVariables.put("exact", true);
+        String responseGetUser = httpComponent.restTemplate().exchange(
+                keycloakUri + "/admin/realms/REALM_RASPLUS_API/users?email={email}&exact={exact}",
+                HttpMethod.GET,
+                request,
+                String.class,
+                uriVariables
+        ).getBody();
+
+        List<Map<String,Object>> users = objectMapper.readValue(responseGetUser, new TypeReference<List<Map<String, Object>>>() {});
+        if (users.isEmpty()) {
+            throw new BadRequestException("Erro to update user");
+        }
+        return users.get(0).get("id").toString();
+    }
+    
+    private String getAdminCliAccessToken() throws JsonProcessingException {
+        LoginDto login = new LoginDto();
+        login.setClientId(clientId);
+        login.setClientSecret(clientSecret);
+        login.setGrantType(grantType);
+
+        Map<String, String> clientCredentialsResponse = objectMapper.readValue(authenticationService.auth(login), Map.class);
+        return clientCredentialsResponse.get("access_token");
+    }
+
+    private static HttpHeaders getHttpHeaders(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer "+ accessToken);
+        return headers;
     }
 }

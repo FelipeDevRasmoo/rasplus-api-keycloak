@@ -1,6 +1,7 @@
 package com.client.api.rasmooplus.service;
 
 import com.client.api.rasmooplus.dto.UserDetailsDto;
+import com.client.api.rasmooplus.dto.oauth.UserRepresentationDto;
 
 public interface UserDetailsService {
 
@@ -9,6 +10,8 @@ public interface UserDetailsService {
 
     boolean recoveryCodeIsValid(String recoveryCode, String email);
 
-    void updatePasswordByRecoveryCode(UserDetailsDto userDetailsDto);
+    void updatePasswordByRecoveryCode(UserDetailsDto userDetails);
+
+    void createAuthUser(UserRepresentationDto userRepresentation);
 
 }

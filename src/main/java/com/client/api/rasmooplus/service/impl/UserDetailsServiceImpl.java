@@ -1,6 +1,7 @@
 package com.client.api.rasmooplus.service.impl;
 
 import com.client.api.rasmooplus.dto.UserDetailsDto;
+import com.client.api.rasmooplus.dto.oauth.UserRepresentationDto;
 import com.client.api.rasmooplus.exception.NotFoudException;
 import com.client.api.rasmooplus.integration.MailIntegration;
 import com.client.api.rasmooplus.model.redis.UserRecoveryCode;
@@ -83,5 +84,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 //
 //            userDetailsRepository.save(userCredentials);
         }
+    }
+
+    @Override
+    public void createAuthUser(UserRepresentationDto dto) {
+
     }
 }

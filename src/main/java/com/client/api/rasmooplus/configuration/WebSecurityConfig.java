@@ -59,7 +59,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(keycloakUri + "/protocol/openid-connect/certs").build();
+        return NimbusJwtDecoder.withJwkSetUri(keycloakUri + "/realms/REALM_RASPLUS_API/protocol/openid-connect/certs").build();
     }
 
     @Bean

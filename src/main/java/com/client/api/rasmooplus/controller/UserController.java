@@ -53,7 +53,7 @@ public class UserController {
     }
 
 
-    @PostMapping
+    @PostMapping("/credentials")
     @PreAuthorize(value = "hasAnyAuthority('ADMIN_READ','ADMIN_WRITE')")
     public ResponseEntity<User> createAuthUser(@Valid @RequestBody UserRepresentationDto dto) {
         userDetailsService.createAuthUser(dto);

@@ -109,7 +109,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (recoveryCodeIsValid(userDetailsDto.getRecoveryCode(), userDetailsDto.getEmail())) {
             var userRepresentation = getUserRepresentationUpdated(userDetailsDto.getPassword());
-            updateAuthUser(userRepresentation, userRepresentation.getEmail());
+            updateAuthUser(userRepresentation, userDetailsDto.getPassword());
         }
     }
 
